@@ -1,0 +1,34 @@
+@startuml
+title Infrastructure Overview - Container Architecture
+
+node "Docker Network" {
+
+  component "Traffic Generator" as TG
+  component "Test Orchestrator" as TO
+
+  component "User Service" as US
+  component "Order Service" as OS
+  component "Inventory Service" as IS
+
+  database "Postgres Order DB" as ODB
+  database "Postgres Inventory DB" as IDB
+
+  component "Kafka Broker" as K
+  component "Zookeeper" as Z
+}
+
+TG --> OS : REST
+OS --> US : REST
+OS --> IS : REST
+
+OS --> ODB
+IS --> IDB
+
+IS --> K : events
+K --> OS : events
+K --> TO : events
+
+TO --> TG : control
+K --> Z
+
+@enduml

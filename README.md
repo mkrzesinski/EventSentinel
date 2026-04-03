@@ -190,4 +190,63 @@ Key milestones:
 
 ---
 
-## 📁 Repository Structure (Preview)
+## 🔄 System Logic Overview
+
+The system implements a hybrid synchronous and event-driven workflow for handling orders and inventory.
+
+Key principles:
+
+1. **Order lifecycle ownership**
+    - Order Service is responsible for creating and maintaining order state.
+
+2. **Inventory-driven fulfillment**
+    - Inventory Service decides whether an order can be completed, reserved, or rejected.
+
+3. **Initial synchronous interaction**
+    - Order Service communicates with Inventory via REST to submit orders for processing.
+
+4. **Asynchronous state propagation**
+    - Inventory publishes events (`order.completed`, `order.reserved`, `order.rejected`) to Kafka.
+
+5. **Event-based state updates**
+    - Order Service consumes events and updates order status in its database.
+
+6. **Separation of concerns**
+    - Order = business state
+    - Inventory = fulfillment logic
+
+7. **Event-driven consistency**
+    - The system uses eventual consistency instead of synchronous confirmation loops.
+
+📄 Detailed description: `system-logic.md`
+
+---
+
+## 🏗️ Infrastructure Overview
+
+The system is deployed as a distributed environment using Docker Compose.
+
+Key assumptions:
+
+1. **Container-per-service model**
+    - Each microservice runs in its own container.
+
+2. **Dedicated infrastructure components**
+    - Kafka (event streaming)
+    - PostgreSQL (per service)
+    - Zookeeper (Kafka coordination)
+
+3. **Traffic simulation layer**
+    - A dedicated `traffic-generator` simulates user behavior and generates system load.
+
+4. **Test control layer**
+    - The `test-orchestrator` defines scenarios, controls execution, and validates results.
+
+5. **Dual communication model**
+    - REST for synchronous calls
+    - Kafka for asynchronous event flow
+
+6. **Internal networking**
+    - Services communicate via Docker DNS (e.g. `order-service:8080`, `kafka:9092`)
+
+📄 Detailed description: `infrastructure.md`

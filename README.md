@@ -73,7 +73,7 @@ The Test Orchestrator supports a hybrid testing strategy combining:
 
 | Component            | Technology                          |
 |----------------------|-------------------------------------|
-| Language             | Java 17                             |
+| Language             | Java 23                             |
 | Frameworks           | Spring Boot 3, Spring Kafka         |
 | Communication        | REST (Spring Web), Apache Kafka     |
 | Data Storage         | PostgreSQL (H2 for unit testing)    |
@@ -178,15 +178,20 @@ Expected commands:
 
 ---
 
-##  Roadmap (Preview)
+## Roadmap
 
-A detailed project roadmap and epics will be provided in the next step.
+The project is developed iteratively, starting from a minimal working system and gradually introducing event-driven communication, testing layers, and AI capabilities.
 
-Key milestones:
-- [ ] MVP: Functional microservices + Orchestrator with simple test
-- [ ] LLM integration for test generation
-- [ ] Advanced analytics and log ingestion
-- [ ] UI for monitoring test coverage and execution status (optional)
+High-level phases:
+
+1. Core system (microservices + basic flow)
+2. Event-driven architecture (Kafka integration)
+3. Testing layer (Traffic Generator + Test Orchestrator)
+4. Observability (logs, monitoring, analysis)
+5. AI enhancements (test generation, anomaly detection)
+6. System hardening and reliability
+
+👉 Detailed roadmap and execution plan are available in: `project-roadmap.md`
 
 ---
 

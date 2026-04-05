@@ -1,15 +1,15 @@
 # AGENTS.md
 
 ## Snapshot first
-- Treat this repo as a **documented skeleton**, not a finished microservice system. The architecture is described in `README.md`, `system-logic.md`, `infrastructure.md`, and `Docs/*.puml`, but the code currently contains only three placeholder apps and minimal Maven module descriptors.
+- Treat this repo as a **runtime skeleton guided by docs**, not a finished microservice system. The architecture is described in `README.md`, `system-logic.md`, `infrastructure.md`, and `Docs/*.puml`; the code now contains minimal Spring Boot service skeletons plus a local Compose setup, but not the full documented business flow.
 - Source of truth for the intended business flow: `system-logic.md` + `Docs/flow.uml`.
 - Source of truth for runtime/container topology: `infrastructure.md` + `Docs/infrastructure_diagram.puml`.
 
 ## Repository shape
 - Root `pom.xml` is an aggregator (`packaging=pom`) for `user-service`, `order-service`, and `inventory-service`.
 - Each service has its own Maven module, `Dockerfile`, `README.md`, and package namespace under `com.portfolio.*service`.
-- Current Java entrypoints are only placeholders: `user-service/.../UserServiceApplication.java`, `order-service/.../OrderServiceApplication.java`, `inventory-service/.../InventoryServiceApplication.java`.
-- There are currently **no discovered tests**, controllers, entities, repositories, Kafka configs, or Compose files in the workspace.
+- Current Java entrypoints are minimal Spring Boot apps with inline `/health` endpoints in `user-service/.../UserServiceApplication.java`, `order-service/.../OrderServiceApplication.java`, and `inventory-service/.../InventoryServiceApplication.java`.
+- The workspace now includes `docker-compose.yml` plus multi-stage service `Dockerfile`s, but there are still **no discovered tests**, entities, repositories, service-to-service clients, or Kafka application configs in code.
 
 ## Intended service boundaries
 - `user-service`: validates or manages users; other services should treat it as the user authority.
@@ -20,15 +20,21 @@
 
 ## Important current constraints
 - The project is now aligned on Java 23 across module `pom.xml` files, `.idea/misc.xml`, `README.md`, and all service `Dockerfile`s. Keep new build/runtime config on Java 23 unless you are intentionally planning a downgrade.
-- All `application.yml` files currently bind `server.port: 8080`; this works only if services run separately. If you introduce local multi-service startup, ports must diverge or be container-mapped.
+- All `application.yml` files currently bind `server.port: 8080`; local multi-service startup is handled via Compose port mappings `8081:8080`, `8082:8080`, `8083:8080`.
 - `README.md` mentions Kafka, PostgreSQL, H2, TestNG, REST Assured, Docker Compose, Splunk, and an AI orchestrator, but these are **architectural intentions**, not implemented dependencies in the current codebase.
+- `docker-compose.yml` currently wires only the three HTTP services plus Kafka and Zookeeper; PostgreSQL, business endpoints, and Kafka producers/consumers are still not implemented.
 
 ## Verified developer workflow
 - Root-level Maven validation succeeds:
   - `mvn -q validate`
 - Root-level Maven test phase also succeeds in the current skeleton:
   - `mvn -q test`
-- Do not assume `spring-boot:run`, packaged JARs, or Docker Compose work yet; no Spring Boot plugin/dependencies or compose file were found.
+- Root-level packaging now succeeds and produces runnable service JARs:
+  - `mvn -q package -DskipTests`
+- Compose syntax and image builds can be verified locally from repo root:
+  - `docker compose config`
+  - `docker compose build`
+- Do not assume the Compose stack implements the documented business flow yet; today it is a minimal health-checkable runtime skeleton.
 
 ## Editing conventions for this repo
 - Keep changes **module-local** unless you are intentionally changing cross-service contracts.

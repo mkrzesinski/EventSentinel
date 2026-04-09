@@ -191,7 +191,7 @@ High-level phases:
 5. AI enhancements (test generation, anomaly detection)
 6. System hardening and reliability
 
-👉 Detailed roadmap and execution plan are available in: `project-roadmap.md`
+👉 Detailed roadmap and execution plan are available in: [`Docs/project-roadmap.md`](Docs/project-roadmap.md)
 
 ---
 
@@ -223,7 +223,7 @@ Key principles:
 7. **Event-driven consistency**
     - The system uses eventual consistency instead of synchronous confirmation loops.
 
-📄 Detailed description: `system-logic.md`
+📄 Detailed description: [`Docs/system-logic.md`](Docs/system-logic.md)
 
 ---
 
@@ -254,4 +254,4 @@ Key assumptions:
 6. **Internal networking**
     - Services communicate via Docker DNS (e.g. `order-service:8080`, `kafka:9092`)
 
-📄 Detailed description: `infrastructure.md`
+📄 Detailed description: [`Docs/infrastructure.md`](Docs/infrastructure.md)

@@ -40,19 +40,25 @@
 
 ## Editing conventions for this repo
 - Keep changes **module-local** unless you are intentionally changing cross-service contracts.
-- When implementing the documented architecture, update both code and the matching design docs (`README.md`, `system-logic.md`, `infrastructure.md`) if behavior diverges.
+- When implementing the documented architecture, update both code and the matching design docs (`README.md`, `Docs/system-logic.md`, `Docs/infrastructure.md`) if behavior diverges.
 - Follow the package split already established by module: `com.portfolio.userservice`, `com.portfolio.orderservice`, `com.portfolio.inventoryservice`.
 - Prefer making the “current state vs planned architecture” explicit in docs and PRs; this repo already mixes both.
 - If you add shared event schemas or client contracts, place them where all three modules can consume them consistently and document the ownership boundary.
 
+## CI / GitHub Actions
+- `.github/workflows/health-check.yml` runs on every push and PR to `master`.
+- The workflow builds all service JARs (`mvn -q package -DskipTests`), starts each service on a dedicated port (`18081`–`18083`), and verifies `/health` returns `"status":"UP"`.
+- If you rename JAR artifacts or change the `/health` endpoint contract, update the workflow accordingly.
+
 ## High-value files to read before coding
 - `README.md`
-- `system-logic.md`
-- `infrastructure.md`
-- `project-roadmap.md`
+- `Docs/system-logic.md`
+- `Docs/infrastructure.md`
+- `Docs/project-roadmap.md`
 - `DEVELOPER-COMMANDS.md`
 - `Docs/flow.uml`
 - `Docs/infrastructure_diagram.puml`
 - Root and module `pom.xml` files
 - Service `application.yml` and `Dockerfile` files
+- `.github/workflows/health-check.yml`
 

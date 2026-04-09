@@ -5,15 +5,15 @@
 **Goal:** Establish project direction and documentation.
 
 Scope:
-1. Finalize main README
-2. Add `system-logic.md`
-3. Add `infrastructure.md`
-4. Prepare UML diagrams
-5. Define service responsibilities and architecture decisions
+- [x] Finalize main README
+- [x] Add `system-logic.md`
+- [x] Add `infrastructure.md`
+- [x] Prepare UML diagrams
+- [x] Define service responsibilities and architecture decisions
 
 **Outcome:**
-- Clear and consistent project vision
-- Documented architecture and workflows
+- [x] Clear and consistent project vision
+- [x] Documented architecture and workflows
 
 ---
 
@@ -22,20 +22,20 @@ Scope:
 **Goal:** Run a minimal but working environment.
 
 Scope:
-1. Create repository structure
-2. Prepare base `docker-compose.yml`
-3. Add containers:
-   - user-service
-   - order-service
-   - inventory-service
-   - Kafka
-   - Zookeeper
-   - PostgreSQL instances
-4. Implement basic health endpoints
+- [x] Create repository structure
+- [x] Prepare base `docker-compose.yml`
+- [x] Add containers:
+  - [x] user-service
+  - [x] order-service
+  - [x] inventory-service
+  - [ ] Kafka
+  - [ ] Zookeeper
+  - [ ] PostgreSQL instances
+- [x] Implement basic health endpoints
 
 **Outcome:**
-- System starts with `docker-compose up`
-- Services are reachable and connected
+- [x] System starts with `docker-compose up`
+- [x] Services are reachable and connected
 
 ---
 
@@ -44,14 +44,14 @@ Scope:
 **Goal:** Implement first business service.
 
 Scope:
-1. Create user
-2. Retrieve / validate user
-3. Persist data in database
-4. Basic logging
+- [ ] Create user
+- [ ] Retrieve / validate user
+- [ ] Persist data in database
+- [ ] Basic logging
 
 **Outcome:**
-- Functional user-service
-- Available for validation by other services
+- [ ] Functional user-service
+- [ ] Available for validation by other services
 
 ---
 
@@ -60,13 +60,13 @@ Scope:
 **Goal:** Introduce main entry point for orders.
 
 Scope:
-1. Accept order requests
-2. Validate user via User Service
-3. Persist order in database
-4. Assign initial status: `PENDING_INVENTORY`
+- [ ] Accept order requests
+- [ ] Validate user via User Service
+- [ ] Persist order in database
+- [ ] Assign initial status: `PENDING_INVENTORY`
 
 **Outcome:**
-- System can accept and store orders
+- [ ] System can accept and store orders
 
 ---
 
@@ -75,16 +75,16 @@ Scope:
 **Goal:** Implement fulfillment logic.
 
 Scope:
-1. Accept fulfillment requests
-2. Check stock availability
-3. Decide:
-   - completed
-   - reserved
-   - rejected
-4. Persist reservation queue if needed
+- [ ] Accept fulfillment requests
+- [ ] Check stock availability
+- [ ] Decide:
+  - [ ] completed
+  - [ ] reserved
+  - [ ] rejected
+- [ ] Persist reservation queue if needed
 
 **Outcome:**
-- Inventory becomes the owner of fulfillment logic
+- [ ] Inventory becomes the owner of fulfillment logic
 
 ---
 
@@ -93,12 +93,12 @@ Scope:
 **Goal:** Achieve full synchronous flow.
 
 Scope:
-1. Order → Inventory via REST
-2. Inventory processes request
-3. Handle all decision paths
+- [ ] Order → Inventory via REST
+- [ ] Inventory processes request
+- [ ] Handle all decision paths
 
 **Outcome:**
-- Fully working business flow without events
+- [ ] Fully working business flow without events
 
 ---
 
@@ -107,14 +107,14 @@ Scope:
 **Goal:** Introduce asynchronous communication.
 
 Scope:
-1. Inventory publishes events
-2. Order consumes events
-3. Update order status based on events
-4. Define topics and event types
+- [ ] Inventory publishes events
+- [ ] Order consumes events
+- [ ] Update order status based on events
+- [ ] Define topics and event types
 
 **Outcome:**
-- Event-driven communication enabled
-- Decoupled services
+- [ ] Event-driven communication enabled
+- [ ] Decoupled services
 
 ---
 
@@ -123,13 +123,13 @@ Scope:
 **Goal:** Improve persistence layer.
 
 Scope:
-1. Refine database schemas
-2. Formalize order lifecycle states
-3. Prepare for database migrations
-4. Ensure consistency between services
+- [ ] Refine database schemas
+- [ ] Formalize order lifecycle states
+- [ ] Prepare for database migrations
+- [ ] Ensure consistency between services
 
 **Outcome:**
-- Stable and scalable data model
+- [ ] Stable and scalable data model
 
 ---
 
@@ -138,13 +138,13 @@ Scope:
 **Goal:** Simulate external client behavior.
 
 Scope:
-1. Generate orders automatically
-2. Configure traffic patterns
-3. Support different scenarios
-4. Integrate with services via REST
+- [ ] Generate orders automatically
+- [ ] Configure traffic patterns
+- [ ] Support different scenarios
+- [ ] Integrate with services via REST
 
 **Outcome:**
-- System receives controlled, realistic traffic
+- [ ] System receives controlled, realistic traffic
 
 ---
 
@@ -153,13 +153,13 @@ Scope:
 **Goal:** Introduce automated validation layer.
 
 Scope:
-1. Subscribe to Kafka events
-2. Validate order lifecycle
-3. Correlate requests with outcomes
-4. Generate basic reports
+- [ ] Subscribe to Kafka events
+- [ ] Validate order lifecycle
+- [ ] Correlate requests with outcomes
+- [ ] Generate basic reports
 
 **Outcome:**
-- Automated E2E validation in place
+- [ ] Automated E2E validation in place
 
 ---
 
@@ -168,12 +168,12 @@ Scope:
 **Goal:** Gain visibility into system behavior.
 
 Scope:
-1. Centralize logs (Splunk)
-2. Correlate logs with events
-3. Detect anomalies
+- [ ] Centralize logs (Splunk)
+- [ ] Correlate logs with events
+- [ ] Detect anomalies
 
 **Outcome:**
-- Improved debugging and monitoring capabilities
+- [ ] Improved debugging and monitoring capabilities
 
 ---
 
@@ -182,13 +182,13 @@ Scope:
 **Goal:** Add intelligent test capabilities.
 
 Scope:
-1. Generate test payloads
-2. Generate scenarios
-3. Analyze results
-4. Support anomaly detection
+- [ ] Generate test payloads
+- [ ] Generate scenarios
+- [ ] Analyze results
+- [ ] Support anomaly detection
 
 **Outcome:**
-- AI-enhanced testing system
+- [ ] AI-enhanced testing system
 
 ---
 
@@ -197,14 +197,14 @@ Scope:
 **Goal:** Prepare for real-world scenarios.
 
 Scope:
-1. Retry mechanisms
-2. Idempotency
-3. Duplicate event handling
-4. Error handling
-5. Edge case coverage
+- [ ] Retry mechanisms
+- [ ] Idempotency
+- [ ] Duplicate event handling
+- [ ] Error handling
+- [ ] Edge case coverage
 
 **Outcome:**
-- Robust and production-like system behavior
+- [ ] Robust and production-like system behavior
 
 ---
 
@@ -213,28 +213,28 @@ Scope:
 **Goal:** Prepare project for showcasing.
 
 Scope:
-1. Final documentation
-2. Diagrams refinement
-3. Demo scenarios
-4. Architecture summary
+- [ ] Final documentation
+- [ ] Diagrams refinement
+- [ ] Demo scenarios
+- [ ] Architecture summary
 
 **Outcome:**
-- Portfolio-ready project
+- [ ] Portfolio-ready project
 
 ---
 
 ## Simplified Execution Order
 
-1. Documentation
-2. Runtime setup
-3. User Service
-4. Order Service
-5. Inventory Service
-6. End-to-end flow
-7. Kafka
-8. Traffic Generator
-9. Test Orchestrator
-10. Observability
-11. AI
-12. Hardening
-13. Final polish
+- [x] Documentation
+- [x] Runtime setup
+- [ ] User Service
+- [ ] Order Service
+- [ ] Inventory Service
+- [ ] End-to-end flow
+- [ ] Kafka
+- [ ] Traffic Generator
+- [ ] Test Orchestrator
+- [ ] Observability
+- [ ] AI
+- [ ] Hardening
+- [ ] Final polish

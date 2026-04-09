@@ -1,9 +1,10 @@
 # AGENTS.md
 
 ## Snapshot first
-- Treat this repo as a **runtime skeleton guided by docs**, not a finished microservice system. The architecture is described in `README.md`, `system-logic.md`, `infrastructure.md`, and `Docs/*.puml`; the code now contains minimal Spring Boot service skeletons plus a local Compose setup, but not the full documented business flow.
-- Source of truth for the intended business flow: `system-logic.md` + `Docs/flow.uml`.
-- Source of truth for runtime/container topology: `infrastructure.md` + `Docs/infrastructure_diagram.puml`.
+- Treat this repo as a **runtime skeleton guided by docs**, not a finished microservice system. The architecture is described in `README.md`, `Docs/system-logic.md`, `Docs/infrastructure.md`, and `Docs/*.puml`; the code now contains minimal Spring Boot service skeletons plus a local Compose setup, but not the full documented business flow.
+- Source of truth for the intended business flow: `Docs/system-logic.md` + `Docs/flow.uml`.
+- Source of truth for runtime/container topology: `Docs/infrastructure.md` + `Docs/infrastructure_diagram.puml`.
+- AI agent guidance in this repo is currently centralized in this file (`AGENTS.md`); no additional agent-rule files (for example `.github/copilot-instructions.md`, `CLAUDE.md`, `.cursorrules`) are present.
 
 ## Repository shape
 - Root `pom.xml` is an aggregator (`packaging=pom`) for `user-service`, `order-service`, and `inventory-service`.
@@ -13,10 +14,10 @@
 
 ## Intended service boundaries
 - `user-service`: validates or manages users; other services should treat it as the user authority.
-- `order-service`: owns **order state** and should persist statuses such as `PENDING_INVENTORY`, `RESERVED`, `COMPLETED`, `REJECTED` (see `system-logic.md`).
+- `order-service`: owns **order state** and should persist statuses such as `PENDING_INVENTORY`, `RESERVED`, `COMPLETED`, `REJECTED` (see `Docs/system-logic.md`).
 - `inventory-service`: owns **fulfillment decisions** and should publish lifecycle outcomes; `order-service` reacts to those events instead of polling.
 - Communication pattern is intentionally hybrid: **REST for commands**, **Kafka for state propagation**.
-- Event ordering is expected to be keyed by `orderId` (`infrastructure.md`). Preserve that assumption if you add producers/consumers.
+- Event ordering is expected to be keyed by `orderId` (`Docs/infrastructure.md`). Preserve that assumption if you add producers/consumers.
 
 ## Important current constraints
 - The project is now aligned on Java 23 across module `pom.xml` files, `.idea/misc.xml`, `README.md`, and all service `Dockerfile`s. Keep new build/runtime config on Java 23 unless you are intentionally planning a downgrade.
@@ -34,6 +35,7 @@
 - Compose syntax and image builds can be verified locally from repo root:
   - `docker compose config`
   - `docker compose build`
+- For local non-Compose smoke checks (`java -jar ... --server.port=1808x` + `curl /health`), use the command catalog in `DEVELOPER-COMMANDS.md`.
 - Do not assume the Compose stack implements the documented business flow yet; today it is a minimal health-checkable runtime skeleton.
 
 ## Editing conventions for this repo
@@ -48,6 +50,7 @@
 - `system-logic.md`
 - `infrastructure.md`
 - `project-roadmap.md`
+- `DEVELOPER-COMMANDS.md`
 - `Docs/flow.uml`
 - `Docs/infrastructure_diagram.puml`
 - Root and module `pom.xml` files

@@ -13,8 +13,7 @@ node "Docker Network" {
   database "Postgres Order DB" as ODB
   database "Postgres Inventory DB" as IDB
 
-  component "Kafka Broker" as K
-  component "Zookeeper" as Z
+  component "Kafka Broker (KRaft)" as K
 }
 
 TG --> OS : REST
@@ -29,6 +28,5 @@ K --> OS : events
 K --> TO : events
 
 TO --> TG : control
-K --> Z
 
 @enduml

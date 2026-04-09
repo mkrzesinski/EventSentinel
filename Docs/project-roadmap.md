@@ -28,8 +28,7 @@ Scope:
   - [x] user-service
   - [x] order-service
   - [x] inventory-service
-  - [ ] Kafka
-  - [ ] Zookeeper
+  - [x] Kafka (KRaft mode — no Zookeeper)
   - [ ] PostgreSQL instances
 - [x] Implement basic health endpoints
 

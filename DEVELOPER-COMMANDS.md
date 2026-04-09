@@ -32,7 +32,6 @@ Notes:
   - `order-service` → `8082`
   - `inventory-service` → `8083`
   - `kafka` → `29092`
-  - `zookeeper` → `2181`
 
 ## Run JAR locally
 After `mvn -q package -DskipTests`, you can run the services without Docker.

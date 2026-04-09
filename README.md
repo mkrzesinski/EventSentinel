@@ -237,9 +237,8 @@ Key assumptions:
     - Each microservice runs in its own container.
 
 2. **Dedicated infrastructure components**
-    - Kafka (event streaming)
+    - Kafka (event streaming, KRaft mode — no Zookeeper)
     - PostgreSQL (per service)
-    - Zookeeper (Kafka coordination)
 
 3. **Traffic simulation layer**
     - A dedicated `traffic-generator` simulates user behavior and generates system load.

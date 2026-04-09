@@ -23,7 +23,7 @@
 - The project is now aligned on Java 23 across module `pom.xml` files, `.idea/misc.xml`, `README.md`, and all service `Dockerfile`s. Keep new build/runtime config on Java 23 unless you are intentionally planning a downgrade.
 - All `application.yml` files currently bind `server.port: 8080`; local multi-service startup is handled via Compose port mappings `8081:8080`, `8082:8080`, `8083:8080`.
 - `README.md` mentions Kafka, PostgreSQL, H2, TestNG, REST Assured, Docker Compose, Splunk, and an AI orchestrator, but these are **architectural intentions**, not implemented dependencies in the current codebase.
-- `docker-compose.yml` currently wires only the three HTTP services plus Kafka and Zookeeper; PostgreSQL, business endpoints, and Kafka producers/consumers are still not implemented.
+- `docker-compose.yml` currently wires only the three HTTP services plus Kafka (KRaft mode, `apache/kafka:3.9.0` — no Zookeeper); PostgreSQL, business endpoints, and Kafka producers/consumers are still not implemented.
 
 ## Verified developer workflow
 - Root-level Maven validation succeeds:

@@ -3,6 +3,8 @@ WORKDIR /workspace
 
 COPY pom.xml pom.xml
 COPY user-service/pom.xml user-service/pom.xml
+COPY order-service/pom.xml order-service/pom.xml
+COPY inventory-service/pom.xml inventory-service/pom.xml
 COPY user-service/src user-service/src
 
 RUN mvn -q -pl user-service -am package -DskipTests

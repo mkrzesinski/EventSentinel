@@ -20,8 +20,38 @@ What they do:
 Commands to run from the repository root:
 
 ```zsh
+# Validate Compose file syntax
 docker compose config
+
+# Build service images
 docker compose build
+
+# Start all services (foreground, streaming logs)
+docker compose up
+
+# Start all services and rebuild images beforehand
+docker compose up --build
+
+# Start all services in the background (detached)
+docker compose up -d
+
+# Show status of running services
+docker compose ps
+
+# Stream logs from all services
+docker compose logs -f
+
+# Stream logs from a single service
+docker compose logs -f user-service
+
+# Stop all running services (keeps containers)
+docker compose stop
+
+# Stop and remove containers, networks (keeps volumes)
+docker compose down
+
+# Stop and remove containers, networks, AND volumes (full reset)
+docker compose down -v
 ```
 
 Notes:
@@ -32,6 +62,42 @@ Notes:
   - `order-service` → `8082`
   - `inventory-service` → `8083`
   - `kafka` → `29092`
+  - `user-db`, `order-db`, `inventory-db` → PostgreSQL (no host port exposed)
+
+## Start a single container
+
+```zsh
+# Start one service (and its declared dependencies)
+docker compose up user-service
+docker compose up order-service
+docker compose up inventory-service
+
+# Start one service in the background
+docker compose up -d user-service
+
+# Start one service and rebuild its image first
+docker compose up --build user-service
+
+# Restart a single running service
+docker compose restart user-service
+```
+
+Notes:
+- Starting a service also brings up any services listed under its `depends_on`.
+- Use the service name exactly as it appears in `docker-compose.yml`.
+
+## Docker daemon / status
+
+```zsh
+# Check daemon info and resource usage
+docker info
+
+# List all containers (running and stopped)
+docker ps -a
+
+# List local images
+docker images
+```
 
 ## Run JAR locally
 After `mvn -q package -DskipTests`, you can run the services without Docker.
@@ -101,12 +167,4 @@ in a second terminal:
 ```zsh
 curl http://127.0.0.1:18083/health
 ```
-
-## Next extensions
-Good candidates to add later:
-- full `docker compose up --build`
-- container healthchecks
-- log commands (`docker compose logs`)
-- commands for Kafka topics
-- commands for future business endpoints
 

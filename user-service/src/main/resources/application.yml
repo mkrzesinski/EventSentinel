@@ -1,2 +1,12 @@
 server:
   port: 8080
+
+spring:
+  datasource:
+    url: ${SPRING_DATASOURCE_URL:jdbc:h2:mem:userdb}
+    username: ${SPRING_DATASOURCE_USERNAME:sa}
+    password: ${SPRING_DATASOURCE_PASSWORD:}
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: false

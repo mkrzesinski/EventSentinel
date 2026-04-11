@@ -43,14 +43,14 @@ Scope:
 **Goal:** Implement first business service.
 
 Scope:
-- [ ] Create user
-- [ ] Retrieve / validate user
-- [ ] Persist data in database
-- [ ] Basic logging
+- [x] Create user
+- [x] Retrieve / validate user
+- [x] Persist data in database
+- [x] Basic logging
 
 **Outcome:**
-- [ ] Functional user-service
-- [ ] Available for validation by other services
+- [x] Functional user-service
+- [x] Available for validation by other services
 
 ---
 
@@ -226,7 +226,7 @@ Scope:
 
 - [x] Documentation
 - [x] Runtime setup
-- [ ] User Service
+- [x] User Service
 - [ ] Order Service
 - [ ] Inventory Service
 - [ ] End-to-end flow

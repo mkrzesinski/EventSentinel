@@ -74,16 +74,16 @@ Scope:
 **Goal:** Implement fulfillment logic.
 
 Scope:
-- [ ] Accept fulfillment requests
-- [ ] Check stock availability
-- [ ] Decide:
-  - [ ] completed
-  - [ ] reserved
-  - [ ] rejected
-- [ ] Persist reservation queue if needed
+- [x] Accept fulfillment requests
+- [x] Check stock availability
+- [x] Decide:
+  - [x] completed
+  - [x] reserved
+  - [x] rejected
+- [x] Persist reservation queue if needed
 
 **Outcome:**
-- [ ] Inventory becomes the owner of fulfillment logic
+- [x] Inventory becomes the owner of fulfillment logic
 
 ---
 
@@ -228,7 +228,7 @@ Scope:
 - [x] Runtime setup
 - [x] User Service
 - [x] Order Service
-- [ ] Inventory Service
+- [x] Inventory Service
 - [ ] End-to-end flow
 - [ ] Kafka
 - [ ] Traffic Generator

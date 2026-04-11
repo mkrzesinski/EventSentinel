@@ -29,7 +29,7 @@ Scope:
   - [x] order-service
   - [x] inventory-service
   - [x] Kafka (KRaft mode — no Zookeeper)
-  - [ ] PostgreSQL instances
+  - [x] PostgreSQL instances
 - [x] Implement basic health endpoints
 
 **Outcome:**

@@ -59,13 +59,13 @@ Scope:
 **Goal:** Introduce main entry point for orders.
 
 Scope:
-- [ ] Accept order requests
-- [ ] Validate user via User Service
-- [ ] Persist order in database
-- [ ] Assign initial status: `PENDING_INVENTORY`
+- [x] Accept order requests
+- [x] Validate user via User Service
+- [x] Persist order in database
+- [x] Assign initial status: `PENDING_INVENTORY`
 
 **Outcome:**
-- [ ] System can accept and store orders
+- [x] System can accept and store orders
 
 ---
 
@@ -227,7 +227,7 @@ Scope:
 - [x] Documentation
 - [x] Runtime setup
 - [x] User Service
-- [ ] Order Service
+- [x] Order Service
 - [ ] Inventory Service
 - [ ] End-to-end flow
 - [ ] Kafka

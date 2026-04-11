@@ -13,10 +13,12 @@ spring:
       value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
   datasource:
     url: ${SPRING_DATASOURCE_URL:jdbc:h2:mem:orderdb}
+    username: ${SPRING_DATASOURCE_USERNAME:sa}
+    password: ${SPRING_DATASOURCE_PASSWORD:}
   jpa:
     hibernate:
-      ddl-auto: create-drop
-  h2:
-    console:
-      enabled: true
+      ddl-auto: update
+    show-sql: false
 
+user-service:
+  url: ${USER_SERVICE_URL:http://localhost:8081}

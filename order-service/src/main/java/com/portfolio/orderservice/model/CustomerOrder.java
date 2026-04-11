@@ -18,7 +18,7 @@ public class CustomerOrder {
     @Id
     private String id;
 
-    private String userId;
+    private Long userId;
 
     @Enumerated(EnumType.STRING)
     private OrderStatus status;
@@ -29,7 +29,7 @@ public class CustomerOrder {
     protected CustomerOrder() {
     }
 
-    public CustomerOrder(String id, String userId, OrderStatus status) {
+    public CustomerOrder(String id, Long userId, OrderStatus status) {
         this.id = id;
         this.userId = userId;
         this.status = status;
@@ -41,7 +41,7 @@ public class CustomerOrder {
         return id;
     }
 
-    public String getUserId() {
+    public Long getUserId() {
         return userId;
     }
 

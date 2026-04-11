@@ -47,8 +47,7 @@ Responsibilities:
 
 ### 2.3 Messaging Layer
 
-1. kafka (broker)
-2. zookeeper
+1. kafka (broker, KRaft mode — no Zookeeper required)
 
 Responsibilities:
 - event storage
@@ -189,8 +188,7 @@ node "Docker Network" {
   database "Postgres Order DB" as ODB
   database "Postgres Inventory DB" as IDB
 
-  component "Kafka Broker" as K
-  component "Zookeeper" as Z
+  component "Kafka Broker (KRaft)" as K
 }
 
 TG --> OS : REST
@@ -205,7 +203,6 @@ K --> OS : events
 K --> TO : events
 
 TO --> TG : control
-K --> Z
 
 @enduml
 ```

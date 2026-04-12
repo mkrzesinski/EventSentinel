@@ -39,7 +39,8 @@ public class Book {
     @Column(nullable = false)
     private int availableCopies;
 
-    protected Book() {}
+    protected Book() {
+    }
 
     public Book(String isbn, String title, String author, Genre genre,
                 String publisher, int publicationYear, String language,
@@ -56,16 +57,45 @@ public class Book {
         this.availableCopies = availableCopies;
     }
 
-    public String getIsbn() { return isbn; }
-    public String getTitle() { return title; }
-    public String getAuthor() { return author; }
-    public Genre getGenre() { return genre; }
-    public String getPublisher() { return publisher; }
-    public int getPublicationYear() { return publicationYear; }
-    public String getLanguage() { return language; }
-    public BookFormat getFormat() { return format; }
-    public BigDecimal getPrice() { return price; }
-    public int getAvailableCopies() { return availableCopies; }
+    public String getIsbn() {
+        return isbn;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public String getAuthor() {
+        return author;
+    }
+
+    public Genre getGenre() {
+        return genre;
+    }
+
+    public String getPublisher() {
+        return publisher;
+    }
+
+    public int getPublicationYear() {
+        return publicationYear;
+    }
+
+    public String getLanguage() {
+        return language;
+    }
+
+    public BookFormat getFormat() {
+        return format;
+    }
+
+    public BigDecimal getPrice() {
+        return price;
+    }
+
+    public int getAvailableCopies() {
+        return availableCopies;
+    }
 
     public void deduct(int quantity) {
         this.availableCopies -= quantity;

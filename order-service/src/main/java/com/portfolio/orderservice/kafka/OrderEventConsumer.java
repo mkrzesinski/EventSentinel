@@ -3,6 +3,7 @@ package com.portfolio.orderservice.kafka;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.portfolio.orderservice.dto.OrderEvent;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import com.portfolio.orderservice.model.CustomerOrder;
 import com.portfolio.orderservice.model.OrderStatus;
 import com.portfolio.orderservice.repository.OrderRepository;
@@ -29,6 +30,8 @@ public class OrderEventConsumer {
     private final OrderRepository orderRepository;
     private final ObjectMapper objectMapper;
 
+    @SuppressFBWarnings(value = "EI_EXPOSE_REP2",
+            justification = "ObjectMapper is thread-safe after Spring Boot autoconfiguration")
     public OrderEventConsumer(OrderRepository orderRepository, ObjectMapper objectMapper) {
         this.orderRepository = orderRepository;
         this.objectMapper = objectMapper;
@@ -40,7 +43,8 @@ public class OrderEventConsumer {
         try {
             event = objectMapper.readValue(record.value(), OrderEvent.class);
         } catch (JsonProcessingException e) {
-            log.error("Failed to deserialize event from partition={} offset={}", record.partition(), record.offset(), e);
+            log.error("Failed to deserialize event from partition={} offset={}",
+                    record.partition(), record.offset(), e);
             return;
         }
 

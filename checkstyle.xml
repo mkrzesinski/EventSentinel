@@ -1,0 +1,78 @@
+<?xml version="1.0"?>
+<!DOCTYPE module PUBLIC
+    "-//Checkstyle//DTD Checkstyle Configuration 1.3//EN"
+    "https://checkstyle.org/dtds/configuration_1_3.dtd">
+
+<module name="Checker">
+    <property name="severity" value="error"/>
+    <property name="fileExtensions" value="java"/>
+
+    <!-- No tabs anywhere -->
+    <module name="FileTabCharacter">
+        <property name="eachLine" value="true"/>
+    </module>
+
+    <!-- File must end with newline -->
+    <module name="NewlineAtEndOfFile"/>
+
+    <!-- LineLength is a FileSetCheck in Checkstyle 10.x (lives outside TreeWalker) -->
+    <module name="LineLength">
+        <property name="max" value="120"/>
+        <!-- ignore long import/package lines and URLs -->
+        <property name="ignorePattern" value="^(package|import)\s|https?://|ftp://"/>
+    </module>
+
+    <module name="TreeWalker">
+
+        <!-- === Imports === -->
+        <module name="UnusedImports"/>
+        <module name="RedundantImport"/>
+        <module name="IllegalImport"/>
+
+        <!-- === Naming conventions === -->
+        <module name="PackageName">
+            <property name="format" value="^[a-z]+(\.[a-z][a-z0-9]*)*$"/>
+        </module>
+        <module name="TypeName"/>
+        <!-- Allow 'log' as a common logger field name -->
+        <module name="ConstantName">
+            <property name="format" value="^(log|[A-Z][A-Z0-9]*(_[A-Z0-9]+)*)$"/>
+        </module>
+        <module name="MemberName"/>
+        <module name="MethodName"/>
+        <module name="ParameterName"/>
+        <module name="LocalVariableName"/>
+        <module name="StaticVariableName"/>
+
+        <!-- === Length limits === -->
+        <module name="MethodLength">
+            <property name="max" value="80"/>
+        </module>
+        <!-- max=12 to accommodate entity constructors with many fields -->
+        <module name="ParameterNumber">
+            <property name="max" value="12"/>
+        </module>
+
+        <!-- === Braces === -->
+        <module name="NeedBraces"/>
+        <module name="LeftCurly"/>
+        <module name="RightCurly"/>
+        <module name="EmptyBlock"/>
+
+        <!-- === Coding quality === -->
+        <module name="EqualsHashCode"/>
+        <module name="SimplifyBooleanExpression"/>
+        <module name="SimplifyBooleanReturn"/>
+        <module name="StringLiteralEquality"/>
+        <module name="MultipleVariableDeclarations"/>
+        <module name="OneStatementPerLine"/>
+        <module name="FallThrough"/>
+        <module name="MissingSwitchDefault"/>
+        <module name="DefaultComesLast"/>
+
+        <!-- === Modifiers === -->
+        <module name="ModifierOrder"/>
+        <module name="RedundantModifier"/>
+
+    </module>
+</module>

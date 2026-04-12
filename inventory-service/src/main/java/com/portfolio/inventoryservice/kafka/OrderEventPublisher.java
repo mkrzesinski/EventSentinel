@@ -3,6 +3,7 @@ package com.portfolio.inventoryservice.kafka;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.portfolio.inventoryservice.config.KafkaTopicConfig;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import com.portfolio.inventoryservice.dto.OrderEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,6 +23,8 @@ public class OrderEventPublisher {
     private final KafkaTemplate<String, String> kafkaTemplate;
     private final ObjectMapper objectMapper;
 
+    @SuppressFBWarnings(value = "EI_EXPOSE_REP2",
+            justification = "KafkaTemplate and ObjectMapper are thread-safe Spring-managed beans")
     public OrderEventPublisher(KafkaTemplate<String, String> kafkaTemplate,
                                ObjectMapper objectMapper) {
         this.kafkaTemplate = kafkaTemplate;

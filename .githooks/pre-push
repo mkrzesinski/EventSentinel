@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+# Pre-push hook: runs Checkstyle (validate) + SpotBugs (verify) for all modules.
+# To enable: git config core.hooksPath .githooks
+set -euo pipefail
+
+echo "==> pre-push: running Checkstyle + SpotBugs (skipping tests)..."
+mvn verify -DskipTests --no-transfer-progress -q
+echo "==> pre-push: all checks passed."

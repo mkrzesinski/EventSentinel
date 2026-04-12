@@ -36,9 +36,23 @@ public class Reservation {
         this.quantity = quantity;
     }
 
-    public Long getId() { return id; }
-    public String getOrderId() { return orderId; }
-    public String getIsbn() { return isbn; }
-    public int getQuantity() { return quantity; }
-    public LocalDateTime getCreatedAt() { return createdAt; }
+    public Long getId() {
+        return id;
+    }
+
+    public String getOrderId() {
+        return orderId;
+    }
+
+    public String getIsbn() {
+        return isbn;
+    }
+
+    public int getQuantity() {
+        return quantity;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
 }

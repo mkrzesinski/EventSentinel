@@ -20,6 +20,10 @@ public class CustomerOrder {
 
     private Long userId;
 
+    private String isbn;
+
+    private int quantity;
+
     @Enumerated(EnumType.STRING)
     private OrderStatus status;
 
@@ -29,9 +33,11 @@ public class CustomerOrder {
     protected CustomerOrder() {
     }
 
-    public CustomerOrder(String id, Long userId, OrderStatus status) {
+    public CustomerOrder(String id, Long userId, String isbn, int quantity, OrderStatus status) {
         this.id = id;
         this.userId = userId;
+        this.isbn = isbn;
+        this.quantity = quantity;
         this.status = status;
         this.createdAt = Instant.now();
         this.updatedAt = this.createdAt;
@@ -43,6 +49,14 @@ public class CustomerOrder {
 
     public Long getUserId() {
         return userId;
+    }
+
+    public String getIsbn() {
+        return isbn;
+    }
+
+    public int getQuantity() {
+        return quantity;
     }
 
     public OrderStatus getStatus() {

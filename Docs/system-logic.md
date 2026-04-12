@@ -4,6 +4,10 @@
 
 This document describes the business logic and communication flow of the system.
 
+The system is a **book order and fulfillment platform**. The inventory consists exclusively of physical books (hardcover and paperback). Each book is uniquely identified by its ISBN and carries the following attributes: title, author, genre, publisher, publication year, language, format, price, and available copies.
+
+Supported genres: `SF`, `HISTORICAL`, `CRIME`, `FANTASY`, `CLASSIC`, `BIOGRAPHY`, `POPULAR_SCIENCE`.
+
 The system follows a hybrid architecture:
 - synchronous communication (REST),
 - asynchronous communication (Kafka events).
@@ -51,7 +55,7 @@ UserService --> OrderService : User valid
 OrderService -> OrderDB : Save order\nstatus = PENDING_INVENTORY
 OrderDB --> OrderService : Order saved
 
-OrderService -> InventoryService : Submit order for fulfillment\n(orderId, items, canWait)
+OrderService -> InventoryService : Submit order for fulfillment\n(orderId, isbn, quantity, canWait)
 activate InventoryService
 
 InventoryService -> InventoryDB : Query stock / evaluate availability

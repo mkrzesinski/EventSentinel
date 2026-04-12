@@ -3,10 +3,10 @@ package com.portfolio.inventoryservice.service;
 import com.portfolio.inventoryservice.dto.FulfillmentRequest;
 import com.portfolio.inventoryservice.dto.OrderEvent;
 import com.portfolio.inventoryservice.kafka.OrderEventPublisher;
+import com.portfolio.inventoryservice.model.Book;
 import com.portfolio.inventoryservice.model.Reservation;
-import com.portfolio.inventoryservice.model.Stock;
+import com.portfolio.inventoryservice.repository.BookRepository;
 import com.portfolio.inventoryservice.repository.ReservationRepository;
-import com.portfolio.inventoryservice.repository.StockRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -17,48 +17,48 @@ public class FulfillmentService {
 
     private static final Logger log = LoggerFactory.getLogger(FulfillmentService.class);
 
-    private final StockRepository stockRepository;
+    private final BookRepository bookRepository;
     private final ReservationRepository reservationRepository;
     private final OrderEventPublisher publisher;
 
-    public FulfillmentService(StockRepository stockRepository,
+    public FulfillmentService(BookRepository bookRepository,
                               ReservationRepository reservationRepository,
                               OrderEventPublisher publisher) {
-        this.stockRepository = stockRepository;
+        this.bookRepository = bookRepository;
         this.reservationRepository = reservationRepository;
         this.publisher = publisher;
     }
 
     @Transactional
     public String process(FulfillmentRequest request) {
-        log.info("Processing fulfillment: orderId={} productId={} quantity={} canWait={}",
-                request.orderId(), request.productId(), request.quantity(), request.canWait());
+        log.info("Processing fulfillment: orderId={} isbn={} quantity={} canWait={}",
+                request.orderId(), request.isbn(), request.quantity(), request.canWait());
 
-        Stock stock = stockRepository.findByProductId(request.productId()).orElse(null);
+        Book book = bookRepository.findByIsbn(request.isbn()).orElse(null);
 
         String eventType;
         String reason;
 
-        if (stock == null) {
+        if (book == null) {
             eventType = "REJECTED";
-            reason = "Product not found: " + request.productId();
-            log.warn("Product not found: productId={}", request.productId());
-        } else if (stock.getAvailable() >= request.quantity()) {
-            stock.deduct(request.quantity());
-            stockRepository.save(stock);
+            reason = "Book not found: " + request.isbn();
+            log.warn("Book not found: isbn={}", request.isbn());
+        } else if (book.getAvailableCopies() >= request.quantity()) {
+            book.deduct(request.quantity());
+            bookRepository.save(book);
             eventType = "COMPLETED";
             reason = "Stock available — fulfilled immediately";
-            log.info("Stock deducted: productId={} remaining={}", request.productId(), stock.getAvailable());
+            log.info("Copies deducted: isbn={} remaining={}", request.isbn(), book.getAvailableCopies());
         } else if (request.canWait()) {
-            reservationRepository.save(new Reservation(request.orderId(), request.productId(), request.quantity()));
+            reservationRepository.save(new Reservation(request.orderId(), request.isbn(), request.quantity()));
             eventType = "RESERVED";
-            reason = "Insufficient stock — order queued for reservation";
-            log.info("Reservation created: orderId={} productId={}", request.orderId(), request.productId());
+            reason = "Insufficient copies — order queued for reservation";
+            log.info("Reservation created: orderId={} isbn={}", request.orderId(), request.isbn());
         } else {
             eventType = "REJECTED";
-            reason = "Insufficient stock and waiting not allowed";
-            log.info("Order rejected: orderId={} productId={} available={} requested={}",
-                    request.orderId(), request.productId(), stock.getAvailable(), request.quantity());
+            reason = "Insufficient copies and waiting not allowed";
+            log.info("Order rejected: orderId={} isbn={} available={} requested={}",
+                    request.orderId(), request.isbn(), book.getAvailableCopies(), request.quantity());
         }
 
         publisher.publish(new OrderEvent(request.orderId(), eventType, reason, System.currentTimeMillis()));

@@ -6,7 +6,7 @@ package com.portfolio.inventoryservice.dto;
  */
 public record FulfillmentRequest(
         String orderId,
-        String productId,
+        String isbn,
         int quantity,
         boolean canWait
 ) {

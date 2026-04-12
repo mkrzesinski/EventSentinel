@@ -25,7 +25,8 @@ public class OrderController {
 
     @PostMapping("/orders")
     public ResponseEntity<CustomerOrder> createOrder(@RequestBody CreateOrderRequest request) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(orderService.createOrder(request.userId()));
+        return ResponseEntity.status(HttpStatus.CREATED).body(
+                orderService.createOrder(request.userId(), request.isbn(), request.quantity()));
     }
 
     @GetMapping("/orders/{id}")

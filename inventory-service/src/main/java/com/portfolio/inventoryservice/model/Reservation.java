@@ -15,7 +15,7 @@ public class Reservation {
     private String orderId;
 
     @Column(nullable = false)
-    private String productId;
+    private String isbn;
 
     @Column(nullable = false)
     private int quantity;
@@ -30,15 +30,15 @@ public class Reservation {
 
     protected Reservation() {}
 
-    public Reservation(String orderId, String productId, int quantity) {
+    public Reservation(String orderId, String isbn, int quantity) {
         this.orderId = orderId;
-        this.productId = productId;
+        this.isbn = isbn;
         this.quantity = quantity;
     }
 
     public Long getId() { return id; }
     public String getOrderId() { return orderId; }
-    public String getProductId() { return productId; }
+    public String getIsbn() { return isbn; }
     public int getQuantity() { return quantity; }
     public LocalDateTime getCreatedAt() { return createdAt; }
 }

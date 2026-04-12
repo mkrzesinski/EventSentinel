@@ -19,8 +19,8 @@ The goal of this project is to showcase the intersection of **modern software te
 The system is composed of the following components:
 
 - **UserService** – handles user registration and updates.
-- **OrderService** – processes orders and emits events.
-- **InventoryService** – manages stock levels and responds to order events.
+- **OrderService** – processes book orders and emits events.
+- **InventoryService** – manages physical book stock (hardcover/paperback) and responds to order events.
 - **Apache Kafka** – provides asynchronous event streaming between services.
 - **AI Test Orchestrator** – listens to events and APIs, generates and runs tests, validates results, and logs test coverage.
 

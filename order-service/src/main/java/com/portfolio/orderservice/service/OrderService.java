@@ -25,16 +25,17 @@ public class OrderService {
         this.userServiceClient = userServiceClient;
     }
 
-    public CustomerOrder createOrder(Long userId) {
+    public CustomerOrder createOrder(Long userId, String isbn, int quantity) {
         if (!userServiceClient.validateUser(userId)) {
             log.warn("Order rejected — user does not exist: userId={}", userId);
             throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "User not found: " + userId);
         }
 
         String orderId = UUID.randomUUID().toString();
-        CustomerOrder order = new CustomerOrder(orderId, userId, OrderStatus.PENDING_INVENTORY);
+        CustomerOrder order = new CustomerOrder(orderId, userId, isbn, quantity, OrderStatus.PENDING_INVENTORY);
         orderRepository.save(order);
-        log.info("Order created: id={} userId={} status={}", orderId, userId, order.getStatus());
+        log.info("Order created: id={} userId={} isbn={} quantity={} status={}",
+                orderId, userId, isbn, quantity, order.getStatus());
         return order;
     }
 

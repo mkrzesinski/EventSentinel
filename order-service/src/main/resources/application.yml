@@ -22,3 +22,6 @@ spring:
 
 user-service:
   url: ${USER_SERVICE_URL:http://localhost:8081}
+
+inventory-service:
+  url: ${INVENTORY_SERVICE_URL:http://localhost:8083}

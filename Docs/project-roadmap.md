@@ -63,9 +63,10 @@ Scope:
 - [x] Validate user via User Service
 - [x] Persist order in database
 - [x] Assign initial status: `PENDING_INVENTORY`
+- [x] Consume Kafka events and update order status (`COMPLETED` / `RESERVED` / `REJECTED`)
 
 **Outcome:**
-- [x] System can accept and store orders
+- [x] System can accept, store, and react to order lifecycle events
 
 ---
 
@@ -75,49 +76,35 @@ Scope:
 
 Scope:
 - [x] Accept fulfillment requests
-- [x] Check stock availability
+- [x] Check stock availability (physical books, keyed by ISBN)
 - [x] Decide:
   - [x] completed
   - [x] reserved
   - [x] rejected
 - [x] Persist reservation queue if needed
+- [x] Publish order lifecycle events to Kafka (`order-events` topic, keyed by `orderId`)
 
 **Outcome:**
-- [x] Inventory becomes the owner of fulfillment logic
+- [x] Inventory is the owner of fulfillment logic and event emission
 
 ---
 
-## 6. End-to-End Flow (REST-based)
+## 6. End-to-End Flow
 
-**Goal:** Achieve full synchronous flow.
+**Goal:** Close the full order lifecycle.
 
 Scope:
-- [ ] Order → Inventory via REST
-- [ ] Inventory processes request
-- [ ] Handle all decision paths
+- [x] Order Service calls Inventory Service via REST (`POST /fulfillment`)
+- [x] Inventory processes request and publishes Kafka event
+- [x] Order Service consumes event and updates status
+- [x] Handle all decision paths (completed / reserved / rejected)
 
 **Outcome:**
-- [ ] Fully working business flow without events
+- [x] Full end-to-end flow working: REST entry → fulfillment → event → status update
 
 ---
 
-## 7. Kafka Integration
-
-**Goal:** Introduce asynchronous communication.
-
-Scope:
-- [ ] Inventory publishes events
-- [ ] Order consumes events
-- [ ] Update order status based on events
-- [ ] Define topics and event types
-
-**Outcome:**
-- [ ] Event-driven communication enabled
-- [ ] Decoupled services
-
----
-
-## 8. Data Model Stabilization
+## 7. Data Model Stabilization
 
 **Goal:** Improve persistence layer.
 
@@ -132,7 +119,7 @@ Scope:
 
 ---
 
-## 9. Traffic Generator
+## 8. Traffic Generator
 
 **Goal:** Simulate external client behavior.
 
@@ -147,7 +134,7 @@ Scope:
 
 ---
 
-## 10. Test Orchestrator MVP
+## 9. Test Orchestrator MVP
 
 **Goal:** Introduce automated validation layer.
 
@@ -162,7 +149,7 @@ Scope:
 
 ---
 
-## 11. Observability Layer
+## 10. Observability Layer
 
 **Goal:** Gain visibility into system behavior.
 
@@ -176,7 +163,7 @@ Scope:
 
 ---
 
-## 12. AI Integration
+## 11. AI Integration
 
 **Goal:** Add intelligent test capabilities.
 
@@ -191,7 +178,7 @@ Scope:
 
 ---
 
-## 13. Reliability & Hardening
+## 12. Reliability & Hardening
 
 **Goal:** Prepare for real-world scenarios.
 
@@ -207,7 +194,7 @@ Scope:
 
 ---
 
-## 14. Finalization & Presentation
+## 13. Finalization & Presentation
 
 **Goal:** Prepare project for showcasing.
 
@@ -227,10 +214,9 @@ Scope:
 - [x] Documentation
 - [x] Runtime setup
 - [x] User Service
-- [x] Order Service
-- [x] Inventory Service
-- [ ] End-to-end flow
-- [ ] Kafka
+- [x] Order Service (+ Kafka consumer)
+- [x] Inventory Service (+ Kafka publisher)
+- [x] End-to-end flow
 - [ ] Traffic Generator
 - [ ] Test Orchestrator
 - [ ] Observability

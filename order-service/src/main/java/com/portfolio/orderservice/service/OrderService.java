@@ -1,5 +1,6 @@
 package com.portfolio.orderservice.service;
 
+import com.portfolio.orderservice.client.InventoryServiceClient;
 import com.portfolio.orderservice.client.UserServiceClient;
 import com.portfolio.orderservice.model.CustomerOrder;
 import com.portfolio.orderservice.model.OrderStatus;
@@ -19,13 +20,17 @@ public class OrderService {
 
     private final OrderRepository orderRepository;
     private final UserServiceClient userServiceClient;
+    private final InventoryServiceClient inventoryServiceClient;
 
-    public OrderService(OrderRepository orderRepository, UserServiceClient userServiceClient) {
+    public OrderService(OrderRepository orderRepository,
+                        UserServiceClient userServiceClient,
+                        InventoryServiceClient inventoryServiceClient) {
         this.orderRepository = orderRepository;
         this.userServiceClient = userServiceClient;
+        this.inventoryServiceClient = inventoryServiceClient;
     }
 
-    public CustomerOrder createOrder(Long userId, String isbn, int quantity) {
+    public CustomerOrder createOrder(Long userId, String isbn, int quantity, boolean canWait) {
         if (!userServiceClient.validateUser(userId)) {
             log.warn("Order rejected — user does not exist: userId={}", userId);
             throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "User not found: " + userId);
@@ -36,6 +41,8 @@ public class OrderService {
         orderRepository.save(order);
         log.info("Order created: id={} userId={} isbn={} quantity={} status={}",
                 orderId, userId, isbn, quantity, order.getStatus());
+
+        inventoryServiceClient.submitFulfillment(orderId, isbn, quantity, canWait);
         return order;
     }
 

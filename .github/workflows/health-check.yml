@@ -38,8 +38,8 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: mvn sonar:sonar --no-transfer-progress
 
-  health-check:
-    name: Docker Health Check
+  integration:
+    name: Docker Integration
     runs-on: ubuntu-latest
     needs: quality
 
@@ -89,22 +89,6 @@ jobs:
             "SELECT COUNT(*) FROM flyway_schema_history WHERE success = false;" \
             | grep -q "^0$"
 
-      - name: Stop all services
-        if: always()
-        run: docker compose down -v
-
-  smoke-test:
-    name: E2E Smoke Test
-    runs-on: ubuntu-latest
-    needs: health-check
-
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v6
-
-      - name: Start all services
-        run: docker compose up -d --wait --wait-timeout 180
-
       - name: Sanity — seed data loaded in inventory-db
         run: |
           count=$(docker compose exec inventory-db psql -U user -d inventorydb -tAc \
@@ -117,7 +101,7 @@ jobs:
         run: |
           user=$(curl -sf -X POST http://127.0.0.1:8081/users \
             -H 'Content-Type: application/json' \
-            -d '{"name":"Smoke Test User","email":"smoke@test.com"}')
+            -d '{"username":"smoke_completed","email":"smoke_completed@test.com"}')
           echo "Created user: $user"
           user_id=$(echo "$user" | grep -o '"id":[0-9]*' | grep -o '[0-9]*')
 
@@ -140,13 +124,10 @@ jobs:
 
       - name: Smoke — REJECTED flow (out-of-stock, canWait=false)
         run: |
-          user_id=$(curl -sf http://127.0.0.1:8081/users/1 | grep -o '"id":[0-9]*' | grep -o '[0-9]*' || echo "")
-          if [ -z "$user_id" ]; then
-            user=$(curl -sf -X POST http://127.0.0.1:8081/users \
-              -H 'Content-Type: application/json' \
-              -d '{"name":"Smoke Test User 2","email":"smoke2@test.com"}')
-            user_id=$(echo "$user" | grep -o '"id":[0-9]*' | grep -o '[0-9]*')
-          fi
+          user=$(curl -sf -X POST http://127.0.0.1:8081/users \
+            -H 'Content-Type: application/json' \
+            -d '{"username":"smoke_rejected","email":"smoke_rejected@test.com"}')
+          user_id=$(echo "$user" | grep -o '"id":[0-9]*' | grep -o '[0-9]*')
 
           order=$(curl -sf -X POST http://127.0.0.1:8082/orders \
             -H 'Content-Type: application/json' \
@@ -167,13 +148,10 @@ jobs:
 
       - name: Smoke — RESERVED flow (out-of-stock, canWait=true)
         run: |
-          user_id=$(curl -sf http://127.0.0.1:8081/users/1 | grep -o '"id":[0-9]*' | grep -o '[0-9]*' || echo "")
-          if [ -z "$user_id" ]; then
-            user=$(curl -sf -X POST http://127.0.0.1:8081/users \
-              -H 'Content-Type: application/json' \
-              -d '{"name":"Smoke Test User 3","email":"smoke3@test.com"}')
-            user_id=$(echo "$user" | grep -o '"id":[0-9]*' | grep -o '[0-9]*')
-          fi
+          user=$(curl -sf -X POST http://127.0.0.1:8081/users \
+            -H 'Content-Type: application/json' \
+            -d '{"username":"smoke_reserved","email":"smoke_reserved@test.com"}')
+          user_id=$(echo "$user" | grep -o '"id":[0-9]*' | grep -o '[0-9]*')
 
           order=$(curl -sf -X POST http://127.0.0.1:8082/orders \
             -H 'Content-Type: application/json' \

@@ -4,6 +4,8 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.Id;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
 
 import java.time.Instant;
@@ -39,8 +41,17 @@ public class CustomerOrder {
         this.isbn = isbn;
         this.quantity = quantity;
         this.status = status;
-        this.createdAt = Instant.now();
-        this.updatedAt = this.createdAt;
+    }
+
+    @PrePersist
+    private void prePersist() {
+        createdAt = Instant.now();
+        updatedAt = createdAt;
+    }
+
+    @PreUpdate
+    private void preUpdate() {
+        updatedAt = Instant.now();
     }
 
     public String getId() {
@@ -74,9 +85,4 @@ public class CustomerOrder {
     public Instant getUpdatedAt() {
         return updatedAt;
     }
-
-    public void setUpdatedAt(Instant updatedAt) {
-        this.updatedAt = updatedAt;
-    }
 }
-

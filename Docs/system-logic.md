@@ -112,3 +112,17 @@ deactivate OrderService
 - Kafka → state propagation
 - Inventory = execution engine
 - Order = state holder
+
+---
+
+## 7. Seed ISBNs
+
+The inventory database is pre-seeded (via `V2__seed_books.sql`) with three books that cover all fulfillment decision paths:
+
+| ISBN          | Title                          | Stock | Decision path                          |
+|---------------|--------------------------------|-------|----------------------------------------|
+| 9780451524935 | 1984 — George Orwell           | 10    | `COMPLETED` (any `canWait` value)      |
+| 9780141028088 | The Hound of the Baskervilles  | 0     | `RESERVED`  (requires `canWait=true`)  |
+| 9780060935467 | The Art of War                 | 0     | `REJECTED`  (requires `canWait=false`) |
+
+Use these ISBNs in E2E tests or manual verification after `docker compose up`.

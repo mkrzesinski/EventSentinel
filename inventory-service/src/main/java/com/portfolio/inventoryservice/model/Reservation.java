@@ -1,7 +1,7 @@
 package com.portfolio.inventoryservice.model;
 
 import jakarta.persistence.*;
-import java.time.LocalDateTime;
+import java.time.Instant;
 
 @Entity
 @Table(name = "reservations")
@@ -21,11 +21,11 @@ public class Reservation {
     private int quantity;
 
     @Column(nullable = false, updatable = false)
-    private LocalDateTime createdAt;
+    private Instant createdAt;
 
     @PrePersist
     private void prePersist() {
-        createdAt = LocalDateTime.now();
+        createdAt = Instant.now();
     }
 
     protected Reservation() {}
@@ -52,7 +52,7 @@ public class Reservation {
         return quantity;
     }
 
-    public LocalDateTime getCreatedAt() {
+    public Instant getCreatedAt() {
         return createdAt;
     }
 }

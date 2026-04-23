@@ -151,12 +151,12 @@ Scope:
 **Context:** Timestamps are inconsistent — `CustomerOrder` uses `java.time.Instant`, while `User` and `Reservation` use `java.time.LocalDateTime`. `LocalDateTime` has no timezone information and will produce wrong values when running in Docker containers with non-UTC locale. Additionally, `CustomerOrder.updatedAt` is currently set manually in `OrderService` and `OrderEventConsumer` — this is fragile and easy to forget. There is no `@PreUpdate` hook on the entity.
 
 Scope:
-- [ ] Standardize all timestamp fields to `Instant` / `TIMESTAMPTZ` across all three services (`User.createdAt`, `Reservation.createdAt` → `Instant`)
-- [ ] Add `@PrePersist` / `@PreUpdate` lifecycle hooks to `CustomerOrder` (remove manual `Instant.now()` from service layer)
-- [ ] Confirm `Reservation` has no mutable state that needs `@PreUpdate`
+- [x] Standardize all timestamp fields to `Instant` / `TIMESTAMPTZ` across all three services (`User.createdAt`, `Reservation.createdAt` → `Instant`)
+- [x] Add `@PrePersist` / `@PreUpdate` lifecycle hooks to `CustomerOrder` (remove manual `Instant.now()` from service layer)
+- [x] Confirm `Reservation` has no mutable state that needs `@PreUpdate`
 
 **Outcome:**
-- [ ] Timezone-safe, uniform persistence model — no silent time bugs when running in Docker
+- [x] Timezone-safe, uniform persistence model — no silent time bugs when running in Docker
 
 ---
 
@@ -167,14 +167,14 @@ Scope:
 **Context:** The `books` table is created empty on every fresh start. The E2E flow requires at least one book with known ISBN to produce a `COMPLETED` decision. Without seed data, every new environment (CI, local reset, demo) requires a manual `POST /books` call before any order can be fulfilled. The seed should cover all three fulfillment decision paths so they can be tested deterministically.
 
 Scope:
-- [ ] Write `V2__seed_books.sql` for `inventory-service` with at least three books:
+- [x] Write `V2__seed_books.sql` for `inventory-service` with at least three books:
   - One with sufficient stock → flow path: `COMPLETED`
   - One with zero stock → flow path: `REJECTED` (when `canWait=false`)
   - One with zero stock → flow path: `RESERVED` (when `canWait=true`)
-- [ ] Document the seed ISBNs in `system-logic.md` or inline in the migration file
+- [x] Document the seed ISBNs in `system-logic.md` or inline in the migration file
 
 **Outcome:**
-- [ ] Full E2E flow works immediately after `docker compose up` — no manual API calls needed
+- [x] Full E2E flow works immediately after `docker compose up` — no manual API calls needed
 
 ---
 

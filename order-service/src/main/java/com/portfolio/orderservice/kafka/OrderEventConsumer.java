@@ -13,7 +13,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
 
-import java.time.Instant;
 import java.util.Optional;
 
 /**
@@ -69,7 +68,6 @@ public class OrderEventConsumer {
 
         if (newStatus != null) {
             order.setStatus(newStatus);
-            order.setUpdatedAt(Instant.now());
             orderRepository.save(order);
             log.info("Order {} status updated to {}", event.orderId(), newStatus);
         }

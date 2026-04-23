@@ -38,6 +38,24 @@ jobs:
           echo "inventory-service: $response"
           echo "$response" | grep -q '"status":"UP"'
 
+      - name: Verify Flyway migrations — user-db
+        run: |
+          docker compose exec user-db psql -U user -d userdb -tAc \
+            "SELECT COUNT(*) FROM flyway_schema_history WHERE success = false;" \
+            | grep -q "^0$"
+
+      - name: Verify Flyway migrations — order-db
+        run: |
+          docker compose exec order-db psql -U user -d orderdb -tAc \
+            "SELECT COUNT(*) FROM flyway_schema_history WHERE success = false;" \
+            | grep -q "^0$"
+
+      - name: Verify Flyway migrations — inventory-db
+        run: |
+          docker compose exec inventory-db psql -U user -d inventorydb -tAc \
+            "SELECT COUNT(*) FROM flyway_schema_history WHERE success = false;" \
+            | grep -q "^0$"
+
       - name: Stop all services
         if: always()
         run: docker compose down -v

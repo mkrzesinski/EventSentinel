@@ -106,16 +106,91 @@ Scope:
 
 ## 7. Data Model Stabilization
 
-**Goal:** Improve persistence layer.
+**Goal:** Replace Hibernate auto-DDL with a controlled, versioned persistence layer that is consistent across all services and runnable end-to-end from a clean start.
+
+---
+
+### 7.1 Flyway — Versioned Migrations
+
+**Goal:** Replace `ddl-auto: update` with explicit, versioned SQL migration scripts per service.
+
+**Context:** Currently Hibernate creates and alters tables automatically on startup. This works for a first run but loses control over schema shape — no indexes, no precise column types, no reproducible history. Any column rename or type change in a JPA entity can silently corrupt or fail on an existing database.
 
 Scope:
-- [ ] Refine database schemas
-- [ ] Formalize order lifecycle states
-- [ ] Prepare for database migrations
-- [ ] Ensure consistency between services
+- [x] Add Flyway dependency to `user-service`, `order-service`, `inventory-service`
+- [x] Write `V1__init.sql` per service — explicit `CREATE TABLE` with PostgreSQL-native types
+- [x] Switch `spring.jpa.hibernate.ddl-auto` from `update` to `validate` in all `application.yml`
+- [ ] Verify clean `docker compose up` runs all three migration scripts without error
 
 **Outcome:**
-- [ ] Stable and scalable data model
+- [x] Schema changes tracked, reproducible, and reviewable in git — `ddl-auto: update` gone
+
+---
+
+### 7.2 Schema Formalization
+
+**Goal:** Make PostgreSQL the authoritative source of schema truth with precise types, indexes, and DB-level constraints.
+
+**Context:** JPA annotations define constraints only at the ORM layer — the actual PostgreSQL columns get generic types (e.g. `TEXT` for ISBN instead of `VARCHAR(13)`, `TIMESTAMP` without timezone). There are no explicit indexes beyond primary keys. Adding them later on a live database requires a migration anyway, so this is the right moment.
+
+Scope:
+- [x] Precise column types: `VARCHAR(13)` for ISBN, `TIMESTAMPTZ` for all timestamps, `VARCHAR(255)` for order ID (UUID string)
+- [x] DB-level CHECK constraint on `customer_orders.status` matching the four `OrderStatus` enum values
+- [x] Indexes: `customer_orders(user_id)` (order lookup by user), `customer_orders(status)` (future polling by test orchestrator), `reservations(isbn)` (stock fulfillment lookups)
+- [x] `NOT NULL` and `UNIQUE` constraints explicitly in SQL, not only in `@Column`
+
+**Outcome:**
+- [x] Schema is precise, performant, and self-documenting at the SQL level
+
+---
+
+### 7.3 Model Consistency Cleanup
+
+**Goal:** Fix cross-service inconsistencies in how timestamps and lifecycle state are handled.
+
+**Context:** Timestamps are inconsistent — `CustomerOrder` uses `java.time.Instant`, while `User` and `Reservation` use `java.time.LocalDateTime`. `LocalDateTime` has no timezone information and will produce wrong values when running in Docker containers with non-UTC locale. Additionally, `CustomerOrder.updatedAt` is currently set manually in `OrderService` and `OrderEventConsumer` — this is fragile and easy to forget. There is no `@PreUpdate` hook on the entity.
+
+Scope:
+- [ ] Standardize all timestamp fields to `Instant` / `TIMESTAMPTZ` across all three services (`User.createdAt`, `Reservation.createdAt` → `Instant`)
+- [ ] Add `@PrePersist` / `@PreUpdate` lifecycle hooks to `CustomerOrder` (remove manual `Instant.now()` from service layer)
+- [ ] Confirm `Reservation` has no mutable state that needs `@PreUpdate`
+
+**Outcome:**
+- [ ] Timezone-safe, uniform persistence model — no silent time bugs when running in Docker
+
+---
+
+### 7.4 Seed Data for Inventory
+
+**Goal:** Make the system runnable end-to-end from a fresh `docker compose up` without any manual bootstrapping.
+
+**Context:** The `books` table is created empty on every fresh start. The E2E flow requires at least one book with known ISBN to produce a `COMPLETED` decision. Without seed data, every new environment (CI, local reset, demo) requires a manual `POST /books` call before any order can be fulfilled. The seed should cover all three fulfillment decision paths so they can be tested deterministically.
+
+Scope:
+- [ ] Write `V2__seed_books.sql` for `inventory-service` with at least three books:
+  - One with sufficient stock → flow path: `COMPLETED`
+  - One with zero stock → flow path: `REJECTED` (when `canWait=false`)
+  - One with zero stock → flow path: `RESERVED` (when `canWait=true`)
+- [ ] Document the seed ISBNs in `system-logic.md` or inline in the migration file
+
+**Outcome:**
+- [ ] Full E2E flow works immediately after `docker compose up` — no manual API calls needed
+
+---
+
+### 7.5 H2 Compatibility for Tests
+
+**Goal:** Ensure local test runs (`mvn test`) continue to work with H2 after Flyway is introduced.
+
+**Context:** Flyway will now own schema creation. By default it picks up the same `V1__init.sql` written for PostgreSQL, which may use PostgreSQL-specific syntax (`TIMESTAMPTZ`, `CHECK`, sequences) that H2 does not support. If not addressed, `mvn test` breaks for everyone running without Docker.
+
+Scope:
+- [ ] Configure Flyway with `spring.flyway.locations` to use a separate `db/migration/h2` path in test profile, or enable H2's PostgreSQL compatibility mode (`MODE=PostgreSQL`)
+- [ ] Add `application-test.yml` (or equivalent) per service to activate H2 + correct Flyway path
+- [ ] Verify `mvn -q test` passes on clean checkout without Docker
+
+**Outcome:**
+- [ ] Dev workflow unaffected — unit/integration tests remain fast and Docker-free
 
 ---
 

@@ -99,15 +99,17 @@ jobs:
 
       - name: Smoke — COMPLETED flow (in-stock book, canWait=false)
         run: |
-          user=$(curl -sf -X POST http://127.0.0.1:8081/users \
+          user=$(curl -s --fail-with-body -X POST http://127.0.0.1:8081/users \
             -H 'Content-Type: application/json' \
-            -d '{"username":"smoke_completed","email":"smoke_completed@test.com"}')
+            -d '{"username":"smoke_completed","email":"smoke_completed@test.com"}') \
+            || { echo "ERROR creating user: $user"; exit 1; }
           echo "Created user: $user"
           user_id=$(echo "$user" | grep -o '"id":[0-9]*' | grep -o '[0-9]*')
 
-          order=$(curl -sf -X POST http://127.0.0.1:8082/orders \
+          order=$(curl -s --fail-with-body -X POST http://127.0.0.1:8082/orders \
             -H 'Content-Type: application/json' \
-            -d "{\"userId\":$user_id,\"isbn\":\"9780451524935\",\"quantity\":1,\"canWait\":false}")
+            -d "{\"userId\":$user_id,\"isbn\":\"9780451524935\",\"quantity\":1,\"canWait\":false}") \
+            || { echo "ERROR creating order: $order"; exit 1; }
           echo "Created order: $order"
           order_id=$(echo "$order" | grep -o '"id":"[^"]*"' | cut -d'"' -f4)
 
@@ -124,14 +126,16 @@ jobs:
 
       - name: Smoke — REJECTED flow (out-of-stock, canWait=false)
         run: |
-          user=$(curl -sf -X POST http://127.0.0.1:8081/users \
+          user=$(curl -s --fail-with-body -X POST http://127.0.0.1:8081/users \
             -H 'Content-Type: application/json' \
-            -d '{"username":"smoke_rejected","email":"smoke_rejected@test.com"}')
+            -d '{"username":"smoke_rejected","email":"smoke_rejected@test.com"}') \
+            || { echo "ERROR creating user: $user"; exit 1; }
           user_id=$(echo "$user" | grep -o '"id":[0-9]*' | grep -o '[0-9]*')
 
-          order=$(curl -sf -X POST http://127.0.0.1:8082/orders \
+          order=$(curl -s --fail-with-body -X POST http://127.0.0.1:8082/orders \
             -H 'Content-Type: application/json' \
-            -d "{\"userId\":$user_id,\"isbn\":\"9780060935467\",\"quantity\":1,\"canWait\":false}")
+            -d "{\"userId\":$user_id,\"isbn\":\"9780060935467\",\"quantity\":1,\"canWait\":false}") \
+            || { echo "ERROR creating order: $order"; exit 1; }
           echo "Created order: $order"
           order_id=$(echo "$order" | grep -o '"id":"[^"]*"' | cut -d'"' -f4)
 
@@ -148,14 +152,16 @@ jobs:
 
       - name: Smoke — RESERVED flow (out-of-stock, canWait=true)
         run: |
-          user=$(curl -sf -X POST http://127.0.0.1:8081/users \
+          user=$(curl -s --fail-with-body -X POST http://127.0.0.1:8081/users \
             -H 'Content-Type: application/json' \
-            -d '{"username":"smoke_reserved","email":"smoke_reserved@test.com"}')
+            -d '{"username":"smoke_reserved","email":"smoke_reserved@test.com"}') \
+            || { echo "ERROR creating user: $user"; exit 1; }
           user_id=$(echo "$user" | grep -o '"id":[0-9]*' | grep -o '[0-9]*')
 
-          order=$(curl -sf -X POST http://127.0.0.1:8082/orders \
+          order=$(curl -s --fail-with-body -X POST http://127.0.0.1:8082/orders \
             -H 'Content-Type: application/json' \
-            -d "{\"userId\":$user_id,\"isbn\":\"9780141028088\",\"quantity\":1,\"canWait\":true}")
+            -d "{\"userId\":$user_id,\"isbn\":\"9780141028088\",\"quantity\":1,\"canWait\":true}") \
+            || { echo "ERROR creating order: $order"; exit 1; }
           echo "Created order: $order"
           order_id=$(echo "$order" | grep -o '"id":"[^"]*"' | cut -d'"' -f4)
 

@@ -4,9 +4,9 @@ import com.portfolio.orderservice.dto.FulfillmentRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
-import org.springframework.web.client.RestClientException;
 
 @Component
 public class InventoryServiceClient {
@@ -15,8 +15,9 @@ public class InventoryServiceClient {
 
     private final RestClient restClient;
 
-    public InventoryServiceClient(@Value("${inventory-service.url}") String baseUrl) {
-        this.restClient = RestClient.builder().baseUrl(baseUrl).build();
+    public InventoryServiceClient(RestClient.Builder restClientBuilder,
+                                  @Value("${inventory-service.url}") String baseUrl) {
+        this.restClient = restClientBuilder.baseUrl(baseUrl).build();
     }
 
     /**
@@ -27,11 +28,12 @@ public class InventoryServiceClient {
         try {
             restClient.post()
                     .uri("/fulfillment")
+                    .contentType(MediaType.APPLICATION_JSON)
                     .body(new FulfillmentRequest(orderId, isbn, quantity, canWait))
                     .retrieve()
                     .toBodilessEntity();
             log.info("Fulfillment request submitted: orderId={} isbn={} quantity={}", orderId, isbn, quantity);
-        } catch (RestClientException e) {
+        } catch (Exception e) {
             log.error("Failed to submit fulfillment request: orderId={} — {}", orderId, e.getMessage());
         }
     }

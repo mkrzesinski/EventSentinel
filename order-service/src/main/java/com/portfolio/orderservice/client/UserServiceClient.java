@@ -14,8 +14,9 @@ public class UserServiceClient {
 
     private final RestClient restClient;
 
-    public UserServiceClient(@Value("${user-service.url}") String baseUrl) {
-        this.restClient = RestClient.builder().baseUrl(baseUrl).build();
+    public UserServiceClient(RestClient.Builder restClientBuilder,
+                             @Value("${user-service.url}") String baseUrl) {
+        this.restClient = restClientBuilder.baseUrl(baseUrl).build();
     }
 
     public boolean validateUser(Long userId) {

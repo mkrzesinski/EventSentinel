@@ -1,5 +1,6 @@
 package com.portfolio.orderservice.client;
 
+import com.portfolio.orderservice.dto.FulfillmentRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -23,8 +24,6 @@ public class InventoryServiceClient {
      * A successful call means inventory has received and accepted the request.
      */
     public void submitFulfillment(String orderId, String isbn, int quantity, boolean canWait) {
-        record FulfillmentRequest(String orderId, String isbn, int quantity, boolean canWait) {}
-
         try {
             restClient.post()
                     .uri("/fulfillment")

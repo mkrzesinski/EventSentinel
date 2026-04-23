@@ -92,3 +92,106 @@ jobs:
       - name: Stop all services
         if: always()
         run: docker compose down -v
+
+  smoke-test:
+    name: E2E Smoke Test
+    runs-on: ubuntu-latest
+    needs: health-check
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Start all services
+        run: docker compose up -d --wait --wait-timeout 180
+
+      - name: Sanity — seed data loaded in inventory-db
+        run: |
+          count=$(docker compose exec inventory-db psql -U user -d inventorydb -tAc \
+            "SELECT COUNT(*) FROM books WHERE isbn IN \
+              ('9780451524935','9780141028088','9780060935467');")
+          echo "Seeded books found: $count"
+          [ "$count" -eq 3 ]
+
+      - name: Smoke — COMPLETED flow (in-stock book, canWait=false)
+        run: |
+          user=$(curl -sf -X POST http://127.0.0.1:8081/users \
+            -H 'Content-Type: application/json' \
+            -d '{"name":"Smoke Test User","email":"smoke@test.com"}')
+          echo "Created user: $user"
+          user_id=$(echo "$user" | grep -o '"id":[0-9]*' | grep -o '[0-9]*')
+
+          order=$(curl -sf -X POST http://127.0.0.1:8082/orders \
+            -H 'Content-Type: application/json' \
+            -d "{\"userId\":$user_id,\"isbn\":\"9780451524935\",\"quantity\":1,\"canWait\":false}")
+          echo "Created order: $order"
+          order_id=$(echo "$order" | grep -o '"id":"[^"]*"' | cut -d'"' -f4)
+
+          for i in $(seq 1 10); do
+            status=$(curl -sf http://127.0.0.1:8082/orders/$order_id | grep -o '"status":"[^"]*"' | cut -d'"' -f4)
+            echo "Poll $i: status=$status"
+            if [ "$status" = "COMPLETED" ]; then exit 0; fi
+            if [ "$status" = "REJECTED" ] || [ "$status" = "RESERVED" ]; then
+              echo "ERROR: expected COMPLETED, got $status"; exit 1
+            fi
+            sleep 2
+          done
+          echo "ERROR: order did not reach terminal state within timeout"; exit 1
+
+      - name: Smoke — REJECTED flow (out-of-stock, canWait=false)
+        run: |
+          user_id=$(curl -sf http://127.0.0.1:8081/users/1 | grep -o '"id":[0-9]*' | grep -o '[0-9]*' || echo "")
+          if [ -z "$user_id" ]; then
+            user=$(curl -sf -X POST http://127.0.0.1:8081/users \
+              -H 'Content-Type: application/json' \
+              -d '{"name":"Smoke Test User 2","email":"smoke2@test.com"}')
+            user_id=$(echo "$user" | grep -o '"id":[0-9]*' | grep -o '[0-9]*')
+          fi
+
+          order=$(curl -sf -X POST http://127.0.0.1:8082/orders \
+            -H 'Content-Type: application/json' \
+            -d "{\"userId\":$user_id,\"isbn\":\"9780060935467\",\"quantity\":1,\"canWait\":false}")
+          echo "Created order: $order"
+          order_id=$(echo "$order" | grep -o '"id":"[^"]*"' | cut -d'"' -f4)
+
+          for i in $(seq 1 10); do
+            status=$(curl -sf http://127.0.0.1:8082/orders/$order_id | grep -o '"status":"[^"]*"' | cut -d'"' -f4)
+            echo "Poll $i: status=$status"
+            if [ "$status" = "REJECTED" ]; then exit 0; fi
+            if [ "$status" = "COMPLETED" ] || [ "$status" = "RESERVED" ]; then
+              echo "ERROR: expected REJECTED, got $status"; exit 1
+            fi
+            sleep 2
+          done
+          echo "ERROR: order did not reach terminal state within timeout"; exit 1
+
+      - name: Smoke — RESERVED flow (out-of-stock, canWait=true)
+        run: |
+          user_id=$(curl -sf http://127.0.0.1:8081/users/1 | grep -o '"id":[0-9]*' | grep -o '[0-9]*' || echo "")
+          if [ -z "$user_id" ]; then
+            user=$(curl -sf -X POST http://127.0.0.1:8081/users \
+              -H 'Content-Type: application/json' \
+              -d '{"name":"Smoke Test User 3","email":"smoke3@test.com"}')
+            user_id=$(echo "$user" | grep -o '"id":[0-9]*' | grep -o '[0-9]*')
+          fi
+
+          order=$(curl -sf -X POST http://127.0.0.1:8082/orders \
+            -H 'Content-Type: application/json' \
+            -d "{\"userId\":$user_id,\"isbn\":\"9780141028088\",\"quantity\":1,\"canWait\":true}")
+          echo "Created order: $order"
+          order_id=$(echo "$order" | grep -o '"id":"[^"]*"' | cut -d'"' -f4)
+
+          for i in $(seq 1 10); do
+            status=$(curl -sf http://127.0.0.1:8082/orders/$order_id | grep -o '"status":"[^"]*"' | cut -d'"' -f4)
+            echo "Poll $i: status=$status"
+            if [ "$status" = "RESERVED" ]; then exit 0; fi
+            if [ "$status" = "COMPLETED" ] || [ "$status" = "REJECTED" ]; then
+              echo "ERROR: expected RESERVED, got $status"; exit 1
+            fi
+            sleep 2
+          done
+          echo "ERROR: order did not reach terminal state within timeout"; exit 1
+
+      - name: Stop all services
+        if: always()
+        run: docker compose down -v

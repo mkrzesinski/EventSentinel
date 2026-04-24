@@ -1,0 +1,2 @@
+# Datasource and Kafka bootstrap-servers are provided at runtime
+# by @DynamicPropertySource in HealthCheckIntegrationTest (Testcontainers).

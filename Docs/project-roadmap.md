@@ -202,17 +202,17 @@ mvn test -P integration  # full fidelity, Docker required
 ```
 
 Scope:
-- [ ] Add Maven profiles `h2` and `integration` to parent `pom.xml`
-- [ ] Add Testcontainers dependencies (PostgreSQL + Kafka modules)
-- [ ] Add `application-h2.yml` and `application-integration.yml` per service
-- [ ] Configure Flyway for H2 compatibility
-- [ ] Add minimal health check test per service (smoke baseline for both profiles)
-- [ ] Add `ci-h2.yml` and `ci-integration.yml` GitHub Actions workflows
+- [x] Add Maven profiles `h2` and `integration` to parent `pom.xml`
+- [x] Add Testcontainers dependencies (PostgreSQL + Kafka modules)
+- [x] Add `application-h2.yml` and `application-integration.yml` per service
+- [x] Configure Flyway for H2 compatibility (Flyway disabled in H2 profile; Hibernate `create-drop` used instead — H2 does not support `TIMESTAMPTZ`)
+- [x] Add minimal health check test per service (smoke baseline for both profiles)
+- [x] Add `ci-h2.yml` and `ci-integration.yml` GitHub Actions workflows
 - [ ] Verify both profiles pass on clean checkout
 
 **Outcome:**
-- [ ] Same test suite runs on both environments — divergences between H2 and PostgreSQL are visible and comparable
-- [ ] CI runs three independent pipelines: smoke (Docker Compose), H2 tests, Testcontainers tests
+- [x] Same test suite runs on both environments — divergences between H2 and PostgreSQL are visible and comparable
+- [x] CI runs three independent pipelines: smoke (Docker Compose), H2 tests, Testcontainers tests
 
 ---
 

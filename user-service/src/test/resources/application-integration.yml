@@ -1,0 +1,1 @@
+# Datasource is provided at runtime by @DynamicPropertySource in HealthCheckIntegrationTest (Testcontainers).

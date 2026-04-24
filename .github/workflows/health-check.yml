@@ -106,6 +106,10 @@ jobs:
           echo "Created user: $user"
           user_id=$(echo "$user" | grep -o '"id":[0-9]*' | grep -o '[0-9]*')
 
+          health=$(curl -s --fail-with-body http://127.0.0.1:8082/health) \
+            || { echo "ERROR order-service health: $health"; exit 1; }
+          echo "order-service health: $health"
+
           order=$(curl -s --fail-with-body -X POST http://127.0.0.1:8082/orders \
             -H 'Content-Type: application/json' \
             -d "{\"userId\":$user_id,\"isbn\":\"9780451524935\",\"quantity\":1,\"canWait\":false}") \

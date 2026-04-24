@@ -158,7 +158,34 @@ This initializes all services, databases, Kafka, and testing components.
 
 ---
 
-## 7. Design Principles
+## 7. CI/CD Pipeline
+
+Every push to `master` triggers three independent GitHub Actions pipelines in parallel:
+
+### 7.1 Quality + Smoke (`health-check.yml`)
+1. Checkstyle, SpotBugs, SonarCloud analysis
+2. `docker compose build` + `docker compose up --wait`
+3. Health checks on all three services
+4. Flyway migration verification
+5. Full E2E smoke: COMPLETED / REJECTED / RESERVED order flows
+
+### 7.2 H2 Tests (`ci-h2.yml`)
+- `mvn test -P h2`
+- No Docker required
+- H2 in-memory + embedded Kafka
+- Fast feedback — runs entirely in JVM
+
+### 7.3 Integration Tests (`ci-integration.yml`)
+- `mvn test -P integration`
+- Docker required (managed by Testcontainers)
+- Real PostgreSQL + real Kafka in containers
+- Production-faithful — same schema, same migrations
+
+The H2 and integration pipelines run the **identical test suite**. Divergences between results indicate behavioral differences between H2 and PostgreSQL/Kafka.
+
+---
+
+## 8. Design Principles
 
 1. Separation of concerns
 2. Event-driven architecture

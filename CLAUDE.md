@@ -11,12 +11,15 @@ Read before coding: `README.md`, `system-logic.md`, `infrastructure.md`, `projec
 ## Commands
 
 ```bash
-# Build & test
+# Build
 mvn -q validate
-mvn -q test
 mvn -q package -DskipTests
 
-# Docker
+# Test profiles (identical test suite, two environments)
+mvn test -P h2            # H2 in-memory + embedded Kafka — no Docker required
+mvn test -P integration   # real PostgreSQL + Kafka via Testcontainers — Docker required
+
+# Docker (runtime / "production")
 docker compose config
 docker compose build
 docker compose up
@@ -52,7 +55,9 @@ curl http://127.0.0.1:8083/health
 
 **Docker Compose** currently wires three HTTP services + Kafka (port 29092) + Zookeeper (port 2181). PostgreSQL and all business endpoints are not yet wired.
 
-**Planned but not yet in code**: PostgreSQL (per service), H2 (tests), TestNG + REST Assured, Splunk, AI orchestrator (OpenAI GPT for test generation/log analysis).
+**Test environments** (planned, not yet implemented): two Maven profiles — `-P h2` (H2 + embedded Kafka) and `-P integration` (Testcontainers with real PostgreSQL + Kafka). Both run the identical test suite. Docker Compose is the runtime environment, not a test environment.
+
+**Planned but not yet in code**: TestNG + REST Assured, Splunk, AI orchestrator (OpenAI GPT for test generation/log analysis).
 
 ## Conventions
 

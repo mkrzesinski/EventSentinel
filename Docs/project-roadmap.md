@@ -178,19 +178,41 @@ Scope:
 
 ---
 
-### 7.5 H2 Compatibility for Tests
+### 7.5 Dual Test Environment Setup
 
-**Goal:** Ensure local test runs (`mvn test`) continue to work with H2 after Flyway is introduced.
+**Goal:** Introduce two independent, equivalent test environments — one lightweight (H2), one production-faithful (Testcontainers) — activated via Maven profiles.
 
-**Context:** Flyway will now own schema creation. By default it picks up the same `V1__init.sql` written for PostgreSQL, which may use PostgreSQL-specific syntax (`TIMESTAMPTZ`, `CHECK`, sequences) that H2 does not support. If not addressed, `mvn test` breaks for everyone running without Docker.
+**Context:** A single test suite runs against both environments. The goal is to detect divergences between H2 behavior and real PostgreSQL/Kafka — not to split tests by type, but to compare results across platforms. Both environments are fully independent of the running Docker Compose system.
+
+#### Profile: `h2` (fast, Docker-free)
+- H2 in-memory replaces PostgreSQL
+- Embedded Kafka replaces the real broker
+- No Docker required — runs entirely in JVM
+- Flyway uses PostgreSQL compatibility mode (`MODE=PostgreSQL`) or separate H2 migration path
+
+#### Profile: `integration` (production-faithful)
+- Real PostgreSQL via Testcontainers (Docker required, managed automatically)
+- Real Kafka via Testcontainers
+- Identical schema, identical Flyway migrations as production
+
+#### Invocation
+```bash
+mvn test -P h2           # fast, no Docker
+mvn test -P integration  # full fidelity, Docker required
+```
 
 Scope:
-- [ ] Configure Flyway with `spring.flyway.locations` to use a separate `db/migration/h2` path in test profile, or enable H2's PostgreSQL compatibility mode (`MODE=PostgreSQL`)
-- [ ] Add `application-test.yml` (or equivalent) per service to activate H2 + correct Flyway path
-- [ ] Verify `mvn -q test` passes on clean checkout without Docker
+- [ ] Add Maven profiles `h2` and `integration` to parent `pom.xml`
+- [ ] Add Testcontainers dependencies (PostgreSQL + Kafka modules)
+- [ ] Add `application-h2.yml` and `application-integration.yml` per service
+- [ ] Configure Flyway for H2 compatibility
+- [ ] Add minimal health check test per service (smoke baseline for both profiles)
+- [ ] Add `ci-h2.yml` and `ci-integration.yml` GitHub Actions workflows
+- [ ] Verify both profiles pass on clean checkout
 
 **Outcome:**
-- [ ] Dev workflow unaffected — unit/integration tests remain fast and Docker-free
+- [ ] Same test suite runs on both environments — divergences between H2 and PostgreSQL are visible and comparable
+- [ ] CI runs three independent pipelines: smoke (Docker Compose), H2 tests, Testcontainers tests
 
 ---
 

@@ -36,25 +36,40 @@ Communication flow:
 
 ## 🧪 Testing Strategy
 
-The Test Orchestrator supports a hybrid testing strategy combining:
+The project uses a **dual test environment model** — the same test suite runs against two independently configured environments, activated via Maven profiles:
 
-### 🔹 Contract Testing
-- Verifies that service interfaces conform to shared expectations using Pact.
+### Profile: `h2` — lightweight, Docker-free
+- H2 in-memory database (PostgreSQL compatibility mode)
+- Embedded Kafka
+- No Docker required — runs entirely in JVM
+- Fast feedback for local development
 
-### 🔹 Integration Testing
-- Ensures Kafka message formats and inter-service communication are valid.
+### Profile: `integration` — production-faithful
+- Real PostgreSQL via Testcontainers
+- Real Kafka via Testcontainers
+- Docker required, managed automatically
+- Identical schema and Flyway migrations as production
 
-### 🔹 End-to-End (E2E) Testing
-- Tests full flows, such as "User registration → Order creation → Inventory update".
+```bash
+mvn test -P h2           # fast, no Docker
+mvn test -P integration  # full fidelity, Docker required
+```
 
-### 🔹 AI-Enhanced Testing
-- LLM is used to:
-    - Generate JSON test payloads (valid and invalid cases),
-    - Suggest new test scenarios based on existing OpenAPI specs,
-    - Adjust test cases to API evolution.
+Both profiles are independent of the running Docker Compose system. The goal is to detect behavioral divergences between H2 and real PostgreSQL/Kafka.
 
-### 🔹 Log-Based Anomaly Detection
-- Uses AI to analyze logs and detect unusual patterns or regressions after deployments.
+The Test Orchestrator (planned) will extend this with:
+
+### Contract Testing
+- Verifies that service interfaces conform to shared expectations.
+
+### End-to-End (E2E) Testing
+- Tests full flows: "User registration → Order creation → Inventory fulfillment → Status update".
+
+### AI-Enhanced Testing
+- LLM generates test payloads, suggests scenarios, adapts to API evolution.
+
+### Log-Based Anomaly Detection
+- AI analyzes logs for unusual patterns or regressions after deployments.
 
 ---
 
@@ -76,7 +91,7 @@ The Test Orchestrator supports a hybrid testing strategy combining:
 | Language             | Java 23                             |
 | Frameworks           | Spring Boot 3, Spring Kafka         |
 | Communication        | REST (Spring Web), Apache Kafka     |
-| Data Storage         | PostgreSQL (H2 for unit testing)    |
+| Data Storage         | PostgreSQL, H2 (test profile), Testcontainers (integration profile) |
 | Testing Frameworks   | TestNG, REST Assured                |
 | AI Integration       | OpenAI GPT API (or local LLM)       |
 | Logging & Monitoring | Splunk (log aggregation & analysis) |
@@ -100,7 +115,11 @@ These two modules work together — Spring Boot provides the base infrastructure
 
 **PostgreSQL** is used as the primary relational database across all services due to its robustness, SQL compliance, and wide ecosystem support.
 
-For fast and isolated testing, especially during unit and integration test phases, **H2** is used as an in-memory database. This allows for lightweight test execution without needing to spin up PostgreSQL containers in every test run.
+The project uses a dual test environment model:
+
+**H2** (profile `h2`) is an in-memory database used in the lightweight test profile. It runs entirely in JVM — no Docker required. H2's PostgreSQL compatibility mode minimizes divergence from production behavior.
+
+**Testcontainers** (profile `integration`) spins up a real PostgreSQL container during test execution, managed automatically by the test framework. This profile is production-faithful — same database engine, same Flyway migrations, same schema.
 
 ---
 
@@ -134,33 +153,23 @@ Grafana is not included in this setup, as the project focuses on log-based obser
 
 The project uses **Maven** as the primary build tool for compiling, testing, and packaging the Java applications. Dependency management, test lifecycle handling, and plugin configuration are centralized in Maven for consistency across services.
 
-**GitHub Actions** is used as the CI/CD platform to automate tasks such as building, running tests, and deploying Docker images. This allows for continuous validation and integration of code changes across all services and orchestrator components.
+**GitHub Actions** runs three independent pipelines on every push:
+
+| Pipeline | File | What it does |
+|---|---|---|
+| Quality + Smoke | `health-check.yml` | Checkstyle, SpotBugs, SonarCloud, then Docker Compose smoke tests |
+| H2 tests | `ci-h2.yml` | `mvn test -P h2` — full test suite, no Docker |
+| Integration tests | `ci-integration.yml` | `mvn test -P integration` — full test suite, Testcontainers |
 
 ---
 
 ### Containerization Explanation
 
-Each component of the system, including all microservices and the AI Test Orchestrator, is containerized using **Docker**. This ensures a consistent runtime environment and simplifies local development, testing, and deployment.
+Each microservice is containerized using **Docker**. This ensures a consistent runtime environment and simplifies local development and demonstration.
 
-**Docker Compose** is used to orchestrate all containers locally, allowing for straightforward setup of Kafka, services, and supporting infrastructure with a single command. This supports quick onboarding, reproducible test runs, and scalable architecture design.
+**Docker Compose** orchestrates all containers locally — services, PostgreSQL databases, and Kafka — with a single command. This is the primary runtime environment ("production" equivalent for this project).
 
----
-
----
-
-### Build & CI/CD Explanation
-
-The project uses **Maven** as the primary build tool for compiling, testing, and packaging the Java applications. Dependency management, test lifecycle handling, and plugin configuration are centralized in Maven for consistency across services.
-
-**GitHub Actions** is used as the CI/CD platform to automate tasks such as building, running tests, and deploying Docker images. This allows for continuous validation and integration of code changes across all services and orchestrator components.
-
----
-
-### Containerization Explanation
-
-Each component of the system, including all microservices and the AI Test Orchestrator, is containerized using **Docker**. This ensures a consistent runtime environment and simplifies local development, testing, and deployment.
-
-**Docker Compose** is used to orchestrate all containers locally, allowing for straightforward setup of Kafka, services, and supporting infrastructure with a single command. This supports quick onboarding, reproducible test runs, and scalable architecture design.
+**Testcontainers** is used exclusively within the `integration` test profile. It spins up real PostgreSQL and Kafka containers automatically during `mvn test -P integration`, independently of the Docker Compose setup.
 
 ---
 

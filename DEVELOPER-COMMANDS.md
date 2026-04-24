@@ -7,14 +7,24 @@ Basic project validation from the repository root:
 
 ```zsh
 mvn -q validate
-mvn -q test
 mvn -q package -DskipTests
 ```
 
 What they do:
 - `validate` — checks Maven structure and configuration.
-- `test` — runs the test phase; in the current skeleton it passes without business tests.
 - `package -DskipTests` — builds executable JARs for all three services.
+
+### Test profiles
+
+The project uses two test profiles. Both run the same test suite against different environments:
+
+```zsh
+mvn test -P h2            # H2 in-memory + embedded Kafka — no Docker required
+mvn test -P integration   # real PostgreSQL + Kafka via Testcontainers — Docker required
+```
+
+- `-P h2` — fast, Docker-free. H2 runs in JVM, embedded Kafka starts automatically.
+- `-P integration` — production-faithful. Testcontainers manages PostgreSQL and Kafka containers automatically; no manual `docker compose up` needed.
 
 ## Docker Compose
 Commands to run from the repository root:
